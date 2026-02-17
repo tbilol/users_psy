@@ -19,7 +19,34 @@ cur.execute("create table if not exists data ("
             "address varchar(255) not null,"
             "is_active boolean not null"
             ");")
+def user_create():
+    try:
+         name = input('Enter your name: ')
+         username = input('Enter your username: ')
+         email = input('Enter your email: ')
+         password = input('Enter your password: ')
+         phone = input('Enter your phone number: ')
+         address = input('Enter your address: ')
+         is_active = True if input('Enter your are active (Y/N): ') == 'Y' else False
+         cur.execute('insert into  if not exists data (name, email, username, password, phone, address, is_active) values(%s, %s, %s, %s, %s, %s, %s)',
+                     (name, email, username, password, phone, address, is_active))
+         conn.commit()
+         print('User created successfully...')
+         main()
+    except psycopg2.Error as e:
+        print('This member already exists!!!')
+        main()
 
+def user_delete():
+    username = input('Enter your username: ')
+    try:
+        cur.execute(f'delete from data where username = {username};')
+        conn.commit()
+        print(f'User {username} - sucsessfully deleted...')
+        main()
+    except psycopg2.Error as e:
+        print('This member not found in the database!!!')
+        main()
 
 def main():
     print("""
