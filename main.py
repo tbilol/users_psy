@@ -7,7 +7,6 @@ conn = psycopg2.connect(
     database="why",
     port="5432"
 )
-
 cur = conn.cursor()
 cur.execute("create table if not exists data ("
             "id serial primary key,"
@@ -19,6 +18,9 @@ cur.execute("create table if not exists data ("
             "address varchar(255) not null,"
             "is_active boolean not null"
             ");")
+
+conn.commit()
+
 def user_create():
     try:
          name = input('Enter your name: ')
@@ -48,6 +50,35 @@ def user_delete():
         print('This member not found in the database!!!')
         main()
 
+def user_update():
+    id = int(input(" id:"))
+    name = input("name:")
+    username = input("username:")
+    email = input("email:")
+    password = input("password:")
+    phone = input("phone:")
+    address = input("address:")
+    is_active = input("is_active:")
+    if is_active.lower() == "true":
+        is_active = True
+    else:
+        is_active = False
+
+    try:
+        cur.execute(f"update data set name='{name}', username='{username}', email='{email}', password='{password}', phone='{phone}', address='{address}', is_active='{is_active}' where id='{id}';")
+        conn.commit()
+        print("User updated successfully!")
+        main()
+    except psycopg2.Error as e:
+        print("This member does not exist!")
+        main()
+        
+def show_users():
+    cur.execute("select * from data")
+    data = cur.fetchall()
+    for row in data:
+        print(row)
+    main()
 def main():
     print("""
 1. Create user
@@ -56,17 +87,19 @@ def main():
 4. Show users
 0. Exit""")
 
-    # cmd = input(">>>\s")
-    # if cmd == "1":
-    #     user_create()
-    # elif cmd == "2":
-    #     user_update()
-    # elif cmd == "3":
-    #     user_delete()
-    # elif cmd == "4":
-    #     show_users()
-    # elif cmd == "0":
-    #     exit()
-    # else:
-    #     print("Invalid command")
-    #     main()
+    cmd = input(">>>")
+    if cmd == "1":
+        user_create()
+    elif cmd == "2":
+        user_update()
+    elif cmd == "3":
+        user_delete()
+    elif cmd == "4":
+        show_users()
+    elif cmd == "0":
+        exit()
+    else:
+        print("Invalid command")
+        main()
+
+main()
